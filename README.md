@@ -18,9 +18,7 @@ Tired of deciding what to eat for lunch? This web app eliminates the daily dilem
 ## 🚀 Live Demo
 
 Check out the live application hosted on GitHub Pages:  
-👉 **[LIVE DEMO](https://[your-username].github.io/[your-repository-name])** 👈
-
-*(Remember to replace `[your-username]` and `[your-repository-name]` with your actual GitHub details)*
+👉 **[LIVE DEMO](https://pollyiva.github.io/Lunch-Menu-Generator-project/)** 👈
 
 ## 🍜 Menu Items
 
@@ -64,11 +62,11 @@ Want to run this locally or contribute? Follow these steps:
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/[your-username]/[your-repository-name].git
+    git clone https://github.com/PollyIva/Lunch-Menu-Generator-project.git
     ```
 2.  **Navigate to the project directory**
     ```bash
-    cd [your-repository-name]
+    cd Lunch-Menu-Generator-project
     ```
 3.  **Open it!**  
     Simply open the `index.html` file in your web browser. No build processes required!
