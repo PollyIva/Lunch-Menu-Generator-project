@@ -10,7 +10,7 @@ Tired of deciding what to eat for lunch? This web app eliminates the daily dilem
 ## ✨ Features
 
 *   **Randomized Selection:** Get a completely random lunch suggestion with a single click.
-*   **Visual Appeal:** Each suggestion is paired with a relevant Font Awesome icon for a better experience.
+*   **Visual Appeal:** Each suggestion is paired with a relevant emoji for a better experience.
 *   **Simple & Fast:** Lightweight and loads instantly. No ads, no sign-ups required.
 *   **Mobile-Friendly:** Responsive design that works perfectly on your desktop, tablet, or phone.
 *   **Smooth Animations:** Loading spinner and fade-in effects for a polished user experience.
@@ -26,7 +26,7 @@ The app includes the following lunch options:
 | Icon | Dish |
 |------|------|
 | 🍕 | Pizza |
-| 🐟 | Sushi |
+| 🍣 | Sushi |
 | 🍔 | Burger |
 | 🥗 | Salad |
 | 🌮 | Tacos |
@@ -36,12 +36,12 @@ The app includes the following lunch options:
 | 🍛 | Curry |
 | 🥩 | Steak |
 | 🍲 | Soup |
-| 🔥 | BBQ |
+| 🍖 | BBQ |
 
 ## 🛠️ How It Works
 
 The core logic is simple:
-1.  The app contains a predefined list of lunch menu items with corresponding Font Awesome icons.
+1.  The app contains a predefined list of lunch menu items with corresponding emojis.
 2.  When the user clicks the "Generate" button, a JavaScript function is triggered.
 3.  A brief loading animation (spinner) appears while "thinking."
 4.  The function randomly selects an item from the list using `Math.random()`.
@@ -97,5 +97,5 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-*   Icons provided by [Font Awesome](https://fontawesome.com/).
+*   Icons provided by [Font Awesome](https://fontawesome.com/) for UI elements and emoji for food items.
 *   Inspiration from the eternal question: "What do you want for lunch?"

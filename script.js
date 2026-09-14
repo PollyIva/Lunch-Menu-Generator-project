@@ -4,20 +4,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const foodName = document.querySelector('.food-name');
     const lunchDisplay = document.querySelector('.lunch-display');
     
-    // Array of lunch options with corresponding Font Awesome icons
+    // Array of lunch options paired with emoji (always render as pictures)
     const lunchMenu = [
-        { name: "Pizza", icon: "fas fa-pizza-slice" },
-        { name: "Sushi", icon: "fas fa-fish" },
-        { name: "Burger", icon: "fas fa-hamburger" },
-        { name: "Salad", icon: "fas fa-leaf" },
-        { name: "Tacos", icon: "fas fa-utensil-spoon" },
-        { name: "Ramen", icon: "fas fa-bowl-hot" },
-        { name: "Sandwich", icon: "fas fa-bread-slice" },
-        { name: "Pasta", icon: "fas fa-pasta" },
-        { name: "Curry", icon: "fas fa-mortar-pestle" },
-        { name: "Steak", icon: "fas fa-drumstick-bite" },
-        { name: "Soup", icon: "fas fa-bowl" },
-        { name: "BBQ", icon: "fas fa-fire" }
+        { name: "Pizza", icon: "🍕" },
+        { name: "Sushi", icon: "🍣" },
+        { name: "Burger", icon: "🍔" },
+        { name: "Salad", icon: "🥗" },
+        { name: "Tacos", icon: "🌮" },
+        { name: "Ramen", icon: "🍜" },
+        { name: "Sandwich", icon: "🥪" },
+        { name: "Pasta", icon: "🍝" },
+        { name: "Curry", icon: "🍛" },
+        { name: "Steak", icon: "🥩" },
+        { name: "Soup", icon: "🍲" },
+        { name: "BBQ", icon: "🍖" }
     ];
     
     // Function to generate random lunch
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // After a short delay, show the selected lunch
         setTimeout(() => {
-            foodIcon.innerHTML = `<i class="${selectedLunch.icon}"></i>`;
+            foodIcon.textContent = selectedLunch.icon;
             foodName.textContent = selectedLunch.name;
             
             // Add animation class
