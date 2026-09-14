@@ -51,9 +51,11 @@ The core logic is simple:
 
 ```
 random-lunch-generator/
-├── index.html          # Main HTML file with embedded CSS and JavaScript
-├── README.md           # This file
-└── assets/             # (Optional) Folder for additional images/icons
+├── index.html          # Main HTML file with the page structure
+├── style.css           # CSS stylesheet for layout and design
+├── script.js           # JavaScript containing the menu data and logic
+├── assets/             # (Optional) Folder for additional images/icons
+└── README.md           # This file
 ```
 
 ## 🧩 Installation & Local Development
@@ -87,7 +89,7 @@ Found a bug or have a great idea for a new feature? Contributions are welcome!
 4.  Push to the Branch (`git push origin feature/AmazingFeature`).
 5.  Open a Pull Request.
 
-Feel free to add more menu items to the `lunchMenu` array in `index.html`!
+Feel free to add more menu items to the `lunchMenu` array in `script.js`!
 
 ## 📝 License
 
