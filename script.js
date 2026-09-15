@@ -4,20 +4,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const foodName = document.querySelector('.food-name');
     const lunchDisplay = document.querySelector('.lunch-display');
     
-    // Array of lunch options paired with emoji (always render as pictures)
+    // Array of lunch options paired with a Twemoji SVG image (assets/food/)
     const lunchMenu = [
-        { name: "Pizza", icon: "🍕" },
-        { name: "Sushi", icon: "🍣" },
-        { name: "Burger", icon: "🍔" },
-        { name: "Salad", icon: "🥗" },
-        { name: "Tacos", icon: "🌮" },
-        { name: "Ramen", icon: "🍜" },
-        { name: "Sandwich", icon: "🥪" },
-        { name: "Pasta", icon: "🍝" },
-        { name: "Curry", icon: "🍛" },
-        { name: "Steak", icon: "🥩" },
-        { name: "Soup", icon: "🍲" },
-        { name: "BBQ", icon: "🍖" }
+        { name: "Pizza", img: "pizza.svg" },
+        { name: "Sushi", img: "sushi.svg" },
+        { name: "Burger", img: "burger.svg" },
+        { name: "Salad", img: "salad.svg" },
+        { name: "Tacos", img: "tacos.svg" },
+        { name: "Ramen", img: "ramen.svg" },
+        { name: "Sandwich", img: "sandwich.svg" },
+        { name: "Pasta", img: "pasta.svg" },
+        { name: "Curry", img: "curry.svg" },
+        { name: "Steak", img: "steak.svg" },
+        { name: "Soup", img: "soup.svg" },
+        { name: "BBQ", img: "bbq.svg" }
     ];
     
     // Function to generate random lunch
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // After a short delay, show the selected lunch
         setTimeout(() => {
-            foodIcon.textContent = selectedLunch.icon;
+            foodIcon.innerHTML = `<img src="assets/food/${selectedLunch.img}" alt="${selectedLunch.name}">`;
             foodName.textContent = selectedLunch.name;
             
             // Add animation class

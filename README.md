@@ -10,7 +10,7 @@ Tired of deciding what to eat for lunch? This web app eliminates the daily dilem
 ## ✨ Features
 
 *   **Randomized Selection:** Get a completely random lunch suggestion with a single click.
-*   **Visual Appeal:** Each suggestion is paired with a relevant emoji for a better experience.
+*   **Visual Appeal:** Each suggestion is paired with a crisp Twemoji SVG illustration (self-hosted in `assets/food/`).
 *   **Simple & Fast:** Lightweight and loads instantly. No ads, no sign-ups required.
 *   **Mobile-Friendly:** Responsive design that works perfectly on your desktop, tablet, or phone.
 *   **Smooth Animations:** Loading spinner and fade-in effects for a polished user experience.
@@ -22,26 +22,27 @@ Check out the live application hosted on GitHub Pages:
 
 ## 🍜 Menu Items
 
-The app includes the following lunch options:
-| Icon | Dish |
-|------|------|
-| 🍕 | Pizza |
-| 🍣 | Sushi |
-| 🍔 | Burger |
-| 🥗 | Salad |
-| 🌮 | Tacos |
-| 🍜 | Ramen |
-| 🥪 | Sandwich |
-| 🍝 | Pasta |
-| 🍛 | Curry |
-| 🥩 | Steak |
-| 🍲 | Soup |
-| 🍖 | BBQ |
+The app includes the following lunch options, each with a Twemoji SVG illustration in `assets/food/`:
+
+| Dish     | Image (SVG)    |
+|----------|----------------|
+| Pizza    | `pizza.svg`    |
+| Sushi    | `sushi.svg`    |
+| Burger   | `burger.svg`   |
+| Salad    | `salad.svg`    |
+| Tacos    | `tacos.svg`    |
+| Ramen    | `ramen.svg`    |
+| Sandwich | `sandwich.svg` |
+| Pasta    | `pasta.svg`    |
+| Curry    | `curry.svg`    |
+| Steak    | `steak.svg`    |
+| Soup     | `soup.svg`     |
+| BBQ      | `bbq.svg`      |
 
 ## 🛠️ How It Works
 
 The core logic is simple:
-1.  The app contains a predefined list of lunch menu items with corresponding emojis.
+1.  The app contains a predefined list of lunch menu items with corresponding SVG images.
 2.  When the user clicks the "Generate" button, a JavaScript function is triggered.
 3.  A brief loading animation (spinner) appears while "thinking."
 4.  The function randomly selects an item from the list using `Math.random()`.
@@ -54,7 +55,8 @@ random-lunch-generator/
 ├── index.html          # Main HTML file with the page structure
 ├── style.css           # CSS stylesheet for layout and design
 ├── script.js           # JavaScript containing the menu data and logic
-├── assets/             # (Optional) Folder for additional images/icons
+├── assets/
+│   └── food/           # Twemoji SVG illustrations for each dish
 └── README.md           # This file
 ```
 
@@ -97,5 +99,6 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-*   Icons provided by [Font Awesome](https://fontawesome.com/) for UI elements and emoji for food items.
+*   Food illustrations: [Twemoji](https://github.com/jdecked/twemoji) by Twitter/X, CC-BY 4.0.
+*   UI icons provided by [Font Awesome](https://fontawesome.com/).
 *   Inspiration from the eternal question: "What do you want for lunch?"

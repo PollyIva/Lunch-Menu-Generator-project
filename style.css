@@ -55,6 +55,12 @@ h1 {
     color: #ff6b6b;
 }
 
+.food-icon img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+}
+
 .food-name {
     font-size: 2rem;
     color: #333;
