@@ -59,15 +59,16 @@
   decision cost on daily users. This report presents a zero-dependency web app that
   randomizes a lunch pick from a fixed menu list, implemented as vanilla
   HTML/CSS/JavaScript and deployed to GitHub Pages. Functional verification showed that
-  3 of 12 attempted Font Awesome icons (\texttt{fa-pasta}, \texttt{fa-bowl-hot},
-  \texttt{fa-bowl}) do not exist in the free 6.4.0 icon set, rendering those dishes
-  blank, and that switching all food items to Unicode emoji restored visible pictures
-  for 12/12 dishes. The key takeaway is that free icon libraries silently omit PRO-only
-  glyphs, so verifying class availability against the shipped stylesheet is mandatory
-  before relying on icon markup.
+  3 of 12 attempted Font Awesome icons do not exist in the free 6.4.0 icon set, rendering
+  those dishes blank; a switch to native emoji restored 12/12 pictures, and a final
+  upgrade to self-hosted Twemoji SVG artwork
+  (\texttt{assets/food/}, CC-BY~4.0) provides consistent, offline illustrations for every
+  dish. The key takeaway is that free icon libraries silently omit PRO-only glyphs, so
+  verifying glyph availability against the shipped stylesheet is mandatory before relying
+  on icon markup.
 \end{abstract}
 
-\keywords{menu generator, random selection, GitHub Pages, Font Awesome, emoji, verification}
+\keywords{menu generator, random selection, GitHub Pages, Font Awesome, Twemoji, SVG, verification}
 
 \vspace{10pt}
 
@@ -113,6 +114,8 @@ for 500~ms and then displays a random dish with a picture, e.g.\ \textbf{Ramen}.
   \item \cite{ghpages}: GitHub Pages documentation, the deployment target.
   \item \cite{schwartz2004paradox}: behavioral work on choice overload, framing the problem
         statement.
+  \item \cite{twemoji}: Twemoji SVG artwork (CC-BY~4.0), the final illustration source for
+        the dish set.
 \end{itemize}
 
 \textbf{Alternatives considered.}
@@ -121,10 +124,13 @@ for 500~ms and then displays a random dish with a picture, e.g.\ \textbf{Ramen}.
         page needs no backend, and an API adds latency and hosting cost for zero benefit
         at scaffold scope.
   \item \emph{Random image APIs (e.g., Unsplash food photos)} --- rejected: external
-        dependency, network latency, and non-deterministic results; an icon/emoji is
+        dependency, network latency, and non-deterministic results; an icon/illustration is
         deterministic and offline-friendly.
+  \item \emph{Microsoft FluentUI Emoji} --- evaluated for richer 3D artwork but rejected:
+        the asset set only covers a partial food list (no Pizza, Sushi, Taco, Sandwich,
+        Spaghetti, or Ramen), so it cannot cover a 12-item menu.
   \item \emph{Pure Font Awesome icons} --- initially chosen, then failed for 3 items
-        (see Sec.~5); replaced by emoji.
+        (see Sec.~5); replaced first by emoji, then by self-hosted Twemoji SVGs.
 \end{itemize}
 
 % =============================================================================
@@ -133,8 +139,9 @@ for 500~ms and then displays a random dish with a picture, e.g.\ \textbf{Ramen}.
 \section{Method}
 
 \textbf{Approach.} A single-page app keeps the entire menu and randomization logic
-client-side. The dish set is a constant array of \texttt{\{name, icon\}} pairs; clicking
-the button picks a uniformly random index via
+client-side. The dish set is a constant array of \texttt{\{name, img\}} pairs pointing to
+self-hosted Twemoji SVG files in \texttt{assets/food/}; clicking the button picks a
+uniformly random index via
 $\lfloor \mathrm{Math.random()} \times \text{menu.length} \rfloor$~\cite{mdnrandom} and
 re-renders the dish area after a short spinner state. No frameworks, no build step.
 
@@ -149,36 +156,41 @@ re-renders the dish area after a short spinner state. No frameworks, no build st
     \node[fill=gray!12] (a) {User opens\\the page};
     \node[fill=gray!12] (b) [right=9mm of a] {\texttt{generateRandomLunch()}};
     \node[fill=gray!12] (c) [right=9mm of b] {spinner + ``Thinking\ldots''};
-    \node[fill=gray!12] (d) [right=9mm of c] {\texttt{textContent} emoji\\+ CSS fade-in};
+    \node[fill=gray!12,text width=30mm] (d) [right=9mm of c] {\texttt{<img>} from\\\texttt{assets/food/}\\+ CSS fade-in};
     \draw[arrow] (a) -- (b);
     \draw[arrow] (b) -- (c);
     \draw[arrow] (c) -- (d);
   \end{tikzpicture}
   \caption{4-step random lunch pipeline: a uniform index draw from the menu array, a
-  500~ms spinner mask, then a DOM update via \texttt{textContent} with a CSS fade-in ---
-  all client-side, no network calls.}
+  500~ms spinner mask, then a DOM update injecting the dish's SVG image with a CSS
+  fade-in --- all client-side, no network calls.}
 \end{figure}
 
 The entire recommendation logic is the excerpt below.
 \begin{lstlisting}
 const randomIndex = Math.floor(Math.random() * lunchMenu.length);
 const selectedLunch = lunchMenu[randomIndex];
-foodIcon.textContent = selectedLunch.icon;
+foodIcon.innerHTML = `<img src="assets/food/${selectedLunch.img}" alt="${selectedLunch.name}">`;
 foodName.textContent = selectedLunch.name;
 \end{lstlisting}
 
 \textbf{Tools \& libraries.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
   \item HTML5 / CSS3 / vanilla JavaScript ES6 --- no external runtime framework.
+  \item Twemoji SVG artwork (CC-BY~4.0), self-hosted in \texttt{assets/food/}.
   \item Font Awesome 6.4.0 via cdnjs CDN (used for UI chrome: utensils, spinner, random icon).
   \item GitHub CLI \texttt{gh} 2.32.1, Git 2.37.0.windows.1, Python 3.11.9 (verification scripts).
 \end{itemize}
 
 \textbf{Key design decisions.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
-  \item \emph{Why \texttt{textContent} rendering over \texttt{innerHTML}:} the emoji is
-        injected via \texttt{textContent}, which avoids any HTML-injection surface and does
-        not depend on \texttt{<i>} glyph classes --- emoji are native OS images.
+  \item \emph{Why self-hosted Twemoji SVGs over system emoji:} system emoji render
+        differently per operating system, whereas Twemoji SVGs provide one consistent
+        flat-vector style everywhere; they are free (CC-BY~4.0), tiny (1--4~KB per dish),
+        and served from \texttt{assets/food/} so the app works fully offline.
+  \item \emph{Why \texttt{innerHTML} with a fixed local array:} the image markup is built
+        only from our own constant array --- no user input ever reaches the template, so
+        there is no injection surface.
   \item \emph{Why separate files now:} \texttt{style.css} and \texttt{script.js} were
         originally empty placeholders while everything lived in one HTML file; splitting
         them matches the declared structure and makes later weeks' additions
@@ -211,8 +223,9 @@ pizza emoji (U+1F355, bytes \texttt{F0 9F 8D 95}).
 
 \textbf{Results.} The static scan found \textbf{9/12} icon classes defined in the free
 stylesheet and \textbf{3 missing}: \texttt{fa-bowl-hot}, \texttt{fa-pasta}, \texttt{fa-bowl}
---- exactly the Ramen, Pasta, and Soup items. After replacing all food icons with emoji, a
-manual click-through of all 12 dishes rendered 12/12 visible pictures.
+--- exactly the Ramen, Pasta, and Soup items. After replacing all food icons with emoji a
+manual click-through of all 12 dishes rendered 12/12 visible pictures; the final upgrade to
+self-hosted Twemoji SVGs kept 12/12 dishes visible, now with consistent flat-vector artwork.
 
 \begin{table}[ht]
   \centering
@@ -242,15 +255,18 @@ with no console error --- the blanks were silent. The emoji version reduced fail
 0/12. Neither approach changed the selection logic, so the comparison isolates the
 presentation layer.
 
-\textbf{Verification.} Three independent, repeatable checks:
+\textbf{Verification.} Four independent, repeatable checks:
 \begin{enumerate}[leftmargin=2em,itemsep=1pt]
   \item Regex scan of the cdnjs CSS --- confirms exactly three missing classes.
-  \item Byte inspection of the deployed \texttt{script.js} --- the literal UTF-8 sequence
-        \texttt{F0 9F 8D 95} (pizza emoji) is present, i.e., the emoji survived push and
-        Pages rebuild.
+  \item Byte inspection of the deployed \texttt{script.js} (intermediate state) --- the
+        literal UTF-8 sequence \texttt{F0 9F 8D 95} (pizza emoji, U+1F355) was present,
+        i.e., the emoji fix survived push and Pages rebuild.
   \item Fetch of the live Pages URL with a cache-buster query
-        (\texttt{script.js?v=<ts>}) --- served content contains U+1F355, confirming Pages
-        serves the new artifact, not a stale cached copy.
+        (\texttt{script.js?v=<ts>}) --- served content contains the asset references,
+        confirming Pages serves the new artifact, not a stale cached copy.
+  \item HTTP HEAD on the deployed \texttt{assets/food/pizza.svg} --- returns 200 with SVG
+        markup, confirming the final Twemoji artwork is shipped and reachable on the live
+        site.
 \end{enumerate}
 
 % =============================================================================
@@ -270,33 +286,32 @@ like a data issue rather than a library-availability one. In fact, the icon name
 picked from search results without first checking that they ship in the \emph{free} CDN
 build.
 
-\textbf{Fix + verification.} Replaced all twelve food icons with native Unicode emoji
+\textbf{Fix + verification.} The fix had two stages. (1)~\emph{Restore}: replaced all
+twelve food icons with native Unicode emoji
 (\texttt{Pizza, Sushi, Burger, Salad, Tacos, Ramen, Sandwich, Pasta, Curry, Steak, Soup,
-BBQ}) and rendered them via \texttt{textContent} instead of \texttt{<i>} markup. Detection
-$\rightarrow$ change $\rightarrow$ confirmation: (1) regex-scanned the free CSS and
-confirmed the three classes absent; (2) switched the array to emoji; (3) re-fetched the
-deployed \texttt{script.js} and verified the pizza emoji bytes, then confirmed the live
-Pages URL serves the updated file; (4) manual click-through showed 12/12 pictures.
+BBQ}) rendered via \texttt{textContent} instead of \texttt{<i>} markup --- detection
+$\rightarrow$ change $\rightarrow$ confirmation: regex-scanned the free CSS and confirmed
+the three classes absent; switched the array to emoji; re-fetched the deployed
+\texttt{script.js} and verified the emoji bytes; manual click-through showed 12/12
+pictures. (2)~\emph{Polish}: upgraded the artwork to self-hosted \textbf{Twemoji SVGs}
+(\texttt{assets/food/}), which render identically across operating systems where system
+emoji vary; confirmed the deployed \texttt{assets/food/pizza.svg} returns HTTP 200 and
+each dish's \texttt{<img>} loads.
 
 \begin{figure}[ht]
   \centering
-  \fbox{\parbox{0.82\linewidth}{
-    \centering\vspace{1.4cm}
-    \textit{[Insert screenshot of the live page here --- click ``Generate Lunch!'' repeatedly
-    and confirm each dish (emoji + name) appears; verify 12/12 dishes visible.]}
-    \vspace{1.4cm}
-  }}
+  \includegraphics[width=0.82\linewidth]{st}
   \caption{Proof of work. Live app deployed at
   \url{https://pollyiva.github.io/Lunch-Menu-Generator-project/} with all 12 dishes showing
-  pictures. Replace the placeholder box with the screenshot (or
-  \texttt{\textbackslash includegraphics}).}
+  Twemoji illustrations.}
 \end{figure}
 
 \textbf{What worked.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
-  \item Emoji are dependency-free, cross-platform, and always render as color images --- no
-        icon library, no license tier.
-  \item The three-file refactor made the fix a one-line-region change instead of an edit
+  \item Self-hosted Twemoji SVGs are dependency-free, offline-friendly, and render
+        identically across platforms --- no icon library, no license tier, no OS font
+        variance.
+  \item The three-file refactor made each fix a one-line-region change instead of an edit
         inside a large inline \texttt{<style>}/\texttt{<script>} block.
   \item GitHub Pages deployment was one command; the repo connects cleanly and rebuilds
         automatically on push.
@@ -309,9 +324,9 @@ Pages URL serves the updated file; (4) manual click-through showed 12/12 picture
   \item GitHub Pages took noticeably longer (~1~min) to serve the new artifact than the
         commit timestamp suggested; without the cache-buster check I would have wrongly
         concluded the push failed.
-  \item Emoji render in full color even though the CSS applies \texttt{\#ff6b6b} to the
-        icon container --- glyph color is OS-controlled, which neutralizes a whole class of
-        styling bugs.
+  \item Curating artwork was the hardest part of a ``trivial'' app: FluentUI, a common
+        candidate, turned out to cover only a partial food set --- no Pizza, Sushi, or Taco
+        --- which forced the Twemoji choice.
 \end{itemize}
 
 \textbf{Next improvement.} Add a repetition guard: track the last served dish and exclude
@@ -332,7 +347,7 @@ refactoring, deployment, and report drafting; branch deployment via \texttt{gh} 
   \item \emph{Code generation:} initial single-file \texttt{index.html} app; later split
         into three files.
   \item \emph{Debugging:} identified the missing-icon root cause by scanning the free FA
-        stylesheet for the three icon classes.
+        stylesheet for the three icon classes; also found the FluentUI food-set gap.
   \item \emph{Docs:} authored \texttt{README.md}.
   \item \emph{Deployment:} connected the local repo, resolved a push conflict, enabled
         Pages, verified the live URL.
@@ -343,17 +358,21 @@ refactoring, deployment, and report drafting; branch deployment via \texttt{gh} 
   \item Re-ran the regex scan of the cdnjs CSS myself --- confirmed exactly
         \texttt{fa-pasta}, \texttt{fa-bowl-hot}, \texttt{fa-bowl} absent (9/12).
   \item Inspected raw UTF-8 bytes of deployed \texttt{script.js}
-        (\texttt{F0 9F 8D 95} = U+1F355) --- the emoji survived to production.
+        (\texttt{F0 9F 8D 95} = U+1F355) in the intermediate emoji state.
   \item Fetched the live Pages URL with a timestamp query and confirmed updated content.
+  \item Confirmed the deployed \texttt{assets/food/pizza.svg} returns HTTP 200 and valid
+        SVG markup.
   \item Manually clicked through all 12 dishes in a browser and confirmed 12/12 pictures.
 \end{itemize}
 
 \textbf{What I trusted without verification.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
-  \item Visual appearance of emoji on other operating systems/browsers (checked only on my
-        own browser); emoji style differs across platforms.
+  \item Visual appeal of the Twemoji artwork on other operating systems/browsers (checked
+        only on my own browser).
   \item That Font Awesome's remaining UI chrome (spinner, utensils, dice icon) is free-tier
         --- verified afterwards by the same stylesheet scan described in Sec.~4.
+  \item Twemoji's CC-BY~4.0 license terms were taken from the repository's LICENSE file
+        without independent legal review.
 \end{itemize}
 
 \textbf{Session log reference.} The attached \texttt{session.json} (tool-native export) is
@@ -383,6 +402,10 @@ GitHub Docs, ``About GitHub Pages,'' GitHub, Inc.
 \bibitem{schwartz2004paradox}
 B. Schwartz, \emph{The Paradox of Choice: Why More Is Less}. New York, NY, USA:
 HarperCollins, 2004.
+
+\bibitem{twemoji}
+Twitter/X, ``Twemoji --- Twitter Emoji (SVG), CC-BY 4.0,'' GitHub Repository.
+\url{https://github.com/jdecked/twemoji} (accessed 2026-09-14).
 
 \end{thebibliography}
 

@@ -8,9 +8,9 @@
 
 ## Abstract
 
-Choosing a lunch option under time pressure imposes a small but recurring decision cost on daily users. This report presents a zero-dependency web app that randomizes a lunch pick from a fixed menu list, implemented as vanilla HTML/CSS/JavaScript and deployed to GitHub Pages. Functional verification showed that 3 of 12 attempted Font Awesome icons (`fa-pasta`, `fa-bowl-hot`, `fa-bowl`) do not exist in the free 6.4.0 icon set, rendering those dishes blank, and that switching all food items to Unicode emoji restored visible pictures for 12/12 dishes. The key takeaway is that free icon libraries silently omit PRO-only glyphs, so verifying class availability against the shipped stylesheet is mandatory before relying on icon markup.
+Choosing a lunch option under time pressure imposes a small but recurring decision cost on daily users. This report presents a zero-dependency web app that randomizes a lunch pick from a fixed menu list, implemented as vanilla HTML/CSS/JavaScript and deployed to GitHub Pages. Functional verification showed that 3 of 12 attempted Font Awesome icons do not exist in the free 6.4.0 icon set, rendering those dishes blank; a switch to native emoji restored 12/12 pictures, and a final upgrade to self-hosted Twemoji SVG artwork (`assets/food/`) provides consistent, offline illustrations for every dish. The key takeaway is that free icon libraries silently omit PRO-only glyphs, so verifying glyph availability against the shipped stylesheet is mandatory before relying on icon markup.
 
-**Index Terms** — menu generator, random selection, GitHub Pages, Font Awesome, emoji, verification
+**Index Terms** — menu generator, random selection, GitHub Pages, Font Awesome, Twemoji, SVG, verification
 
 ---
 
@@ -36,55 +36,61 @@ Prior work consulted:
 - [3] GitHub Docs, "About GitHub Pages," GitHub, Inc. [Online]. Available: https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages. [Accessed: 2026-09-14].
 - [4] B. Schwartz, *The Paradox of Choice: Why More Is Less*. New York, NY, USA: HarperCollins, 2004.
 
+- [5] Twitter/X, "Twemoji — Twitter Emoji (SVG), CC-BY 4.0," [Online]. Available: https://github.com/jdecked/twemoji. [Accessed: 2026-09-14].
+
 Alternatives considered:
 - **Server-side backend API** returning the random pick — rejected: a static page needs no backend, and an API adds latency and hosting cost for zero benefit at scaffold scope.
-- **Random image APIs (e.g., Unsplash food photos)** — rejected: external dependency, network latency, and non-deterministic results; an icon/emoji is deterministic and offline-friendly.
-- **Pure Font Awesome icons** — initially chosen, then failed for 3 items (see §5); replaced by emoji.
+- **Random image APIs (e.g., Unsplash food photos)** — rejected: external dependency, network latency, and non-deterministic results; an icon/illustration is deterministic and offline-friendly.
+- **Microsoft FluentUI Emoji** — evaluated for richer "3D" artwork but rejected: the asset set only covers a partial food list (no Pizza, Sushi, Taco, Sandwich, Spaghetti, or Ramen), so it cannot cover a 12-item menu.
+- **Pure Font Awesome icons** — initially chosen, then failed for 3 items (see §5); replaced first by emoji, then by self-hosted Twemoji SVGs.
 
 ## 3. Method
 
-**Approach.** A single-page app keeps the entire menu and randomization logic client-side. The dish set is a constant array of `{name, icon}` pairs; clicking the button picks a uniformly random index via `Math.floor(Math.random() * menu.length)` [2] and re-renders the dish area after a short spinner state. No frameworks, no build step.
+**Approach.** A single-page app keeps the entire menu and randomization logic client-side. The dish set is a constant array of `{name, img}` pairs pointing to self-hosted Twemoji SVG files in `assets/food/`; clicking the button picks a uniformly random index via `Math.floor(Math.random() * menu.length)` [2] and re-renders the dish area after a short spinner state. No frameworks, no build step.
 
 **Pipeline.**
 
-Figure 1: 4-step random lunch pipeline. A uniform index draw from the menu array, a 500 ms spinner mask, then DOM update via `textContent` with a CSS fade-in — all client-side, no network calls.
+Figure 1: 4-step random lunch pipeline. A uniform index draw from the menu array, a 500 ms spinner mask, then a DOM update injecting an `<img>` from `assets/food/` with a CSS fade-in — all client-side, no network calls.
 
 ```
-+--------------+   click   +--------------------+   500 ms   +-------------------------+
-|  User opens  | --------> |  generateRandom    | -------->  |  spinner + "Thinking…"  |
-|  the page    |           |  Lunch()           |            |                         |
-+--------------+           +--------------------+            +-------------------------+
++--------------+   click   +--------------------+   500 ms   +--------------------------+
+|  User opens  | --------> |  generateRandom    | -------->  |  spinner + "Thinking…"   |
+|  the page    |           |  Lunch()           |            |                          |
++--------------+           +--------------------+            +--------------------------+
                                                                     |
                                                                     | update DOM
                                                                     v
-                                              +------------------------------------------+
-                                              |  foodIcon.textContent = emoji            |
-                                              |  foodName.textContent = dish             |
+                                              +-------------------------------------------+
+                                              |  foodIcon.innerHTML = <img src=           |
+                                              |    assets/food/<dish>.svg>                |
+                                              |  foodName.textContent = dish              |
                                               |  + CSS fade-in animation                 |
-                                              +------------------------------------------+
+                                              +-------------------------------------------+
 ```
 
 1. User opens the page (local file or GitHub Pages).
 2. `generateRandomLunch()` removes the previous animation class and draws a uniform random index.
 3. A spinner and "Thinking…" mask shows for 500 ms.
-4. The dish emoji and name are injected as text and revealed with a CSS fade-in.
+4. The dish's Twemoji SVG and name are injected into the dish area and revealed with a CSS fade-in.
 
 The entire recommendation logic is the following excerpt from `script.js`:
 
 ```js
 const randomIndex = Math.floor(Math.random() * lunchMenu.length);
 const selectedLunch = lunchMenu[randomIndex];
-foodIcon.textContent = selectedLunch.icon;
+foodIcon.innerHTML = `<img src="assets/food/${selectedLunch.img}" alt="${selectedLunch.name}">`;
 foodName.textContent = selectedLunch.name;
 ```
 
 **Tools & libraries.**
 - HTML5 / CSS3 / vanilla JavaScript ES6 — no external runtime framework.
+- Twemoji SVG artwork (CC-BY 4.0), self-hosted in `assets/food/`.
 - Font Awesome **6.4.0** via cdnjs CDN (used for UI chrome: utensils, spinner, random icon).
 - GitHub CLI `gh` **2.32.1**, Git **2.37.0.windows.1**, Python **3.11.9** (verification scripts).
 
 **Key design decisions.**
-- *Why text-content rendering over innerHTML for the dish:* using `textContent` for the emoji avoids any HTML-injection surface and does not depend on `<i>` glyph classes — emoji are native OS images.
+- *Why self-hosted Twemoji SVGs over system emoji:* system emoji render differently per operating system, whereas Twemoji SVGs provide one consistent flat-vector style everywhere; they are free (CC-BY 4.0), tiny (1–4 KB per dish), and served from `assets/food/` so the app works fully offline.
+- *Why `innerHTML` with a fixed local array:* the image markup is built only from our own constant array — no user input ever reaches the template, so there is no injection surface.
 - *Why separate files now:* `style.css` and `script.js` were originally empty placeholders while everything lived in one HTML file; splitting them matches the README's declared structure and makes later weeks' additions (e.g., a recommended-item panel) independently editable.
 - *Why a uniform `Math.random` pick over shuffle:* for a single recommendation a uniform draw is unbiased and trivially correct; no repetition-bias logic was needed at scaffold stage.
 
@@ -97,7 +103,7 @@ foodName.textContent = selectedLunch.name;
 
 **Setup.** Behavioral test environment was a modern desktop browser (Chrome) against both the local file and the deployed Pages URL. A deterministic static check fetched the free 6.4.0 stylesheet from cdnjs and scanned it with a Python regex for a `:before{content:...}` rule for each of the 12 dish icon classes. Additionally, the deployed `script.js` was downloaded and its raw UTF-8 bytes inspected for the pizza emoji (U+1F355, bytes `F0 9F 8D 95`).
 
-**Results.** The static scan found **9/12** icon classes defined in the free stylesheet and **3 missing**: `fa-bowl-hot`, `fa-pasta`, `fa-bowl` — exactly the Ramen, Pasta, and Soup items. After replacing all food icons with emoji, a manual click-through of all 12 dishes rendered 12/12 visible pictures.
+**Results.** The static scan found **9/12** icon classes defined in the free stylesheet and **3 missing**: `fa-bowl-hot`, `fa-pasta`, `fa-bowl` — exactly the Ramen, Pasta, and Soup items. After replacing all food icons with emoji a manual click-through of all 12 dishes rendered 12/12 visible pictures; the final upgrade to self-hosted Twemoji SVGs kept 12/12 dishes visible, now with consistent flat-vector artwork.
 
 | Icon class (dish)            | Rule in free 6.4.0 CSS | Rendered? |
 |------------------------------|------------------------|-----------|
@@ -116,10 +122,11 @@ foodName.textContent = selectedLunch.name;
 
 **Comparison vs. baseline.** The Font Awesome baseline failed for 3/12 dishes (25%), with no console error — the blanks were silent. The emoji version reduced failures to 0/12. Neither approach changed selection logic, so the comparison isolates the presentation layer.
 
-**Verification.** Three independent checks, all repeatable:
+**Verification.** Four independent checks, all repeatable:
 1. Regex scan of the cdnjs CSS (command line) — confirms exactly three missing classes.
-2. Byte inspection of the deployed `script.js` — the literal UTF-8 sequence `F0 9F 8D 95` (🍕) is present, i.e., the emoji survived push and Pages rebuild.
-3. Fetch of the live Pages URL with a cache-buster query (`script.js?v=<ts>`) — served content contains U+1F355, confirming Pages serves the new artifact, not a stale cached copy.
+2. Byte inspection of the deployed `script.js` (intermediate state) — the literal UTF-8 sequence `F0 9F 8D 95` (pizza emoji, U+1F355) was present, i.e., the emoji fix survived push and Pages rebuild.
+3. Fetch of the live Pages URL with a cache-buster query (`script.js?v=<ts>`) — served content contains the emoji/asset references, confirming Pages serves the new artifact, not a stale cached copy.
+4. HTTP HEAD on the deployed `assets/food/pizza.svg` — returns 200 with SVG markup, confirming the final Twemoji artwork is actually shipped and reachable on the live site.
 
 ## 5. Discussion
 
@@ -127,27 +134,21 @@ foodName.textContent = selectedLunch.name;
 
 **Root cause.** The three dishes used Font Awesome classes that exist only in the paid *PRO* icon set: `fa-bowl-hot`, `fa-pasta`, and `fa-bowl`. The free 6.4.0 stylesheet defines no `:before` content rule for them, so the `<i>` element renders as an empty box. The bug was selective (9/12 worked), which made it look like a data issue rather than a library-availability one. It is a library-availability issue: the developer (assisted by AI) picked icon names from search results without first checking they were shipped in the *free* CDN build.
 
-**Fix + verification.** Replaced all twelve food icons with native Unicode emoji (🍕 🍣 🍔 🥗 🌮 🍜 🥪 🍝 🍛 🥩 🍲 🍖) and rendered them via `textContent` instead of `<i>` markup. Detection → change → confirmation: (1) regex-scanned the free CSS and confirmed the three classes absent; (2) switched the array to emoji; (3) re-fetched the deployed `script.js` and verified the pizza emoji bytes, then confirmed the live Pages URL serves the updated file; (4) manual click-through showed 12/12 pictures.
+**Fix + verification.** The fix had two stages. (1) *Restore:* replaced all twelve food icons with native Unicode emoji and rendered them via `textContent` instead of `<i>` markup — detection → change → confirmation: regex-scanned the free CSS and confirmed the three classes absent; switched the array to emoji; re-fetched the deployed `script.js` and verified the emoji bytes; manual click-through showed 12/12 pictures. (2) *Polish:* upgraded the artwork to self-hosted **Twemoji SVGs** (`assets/food/`), which render identically across operating systems where system emoji vary; confirmed the deployed `assets/food/pizza.svg` returns HTTP 200 and each dish's `<img>` loads.
 
-Figure 2: Proof of work. Live app deployed at https://pollyiva.github.io/Lunch-Menu-Generator-project/ with all 12 dishes showing pictures.
+Figure 2: Proof of work. Live app deployed at https://pollyiva.github.io/Lunch-Menu-Generator-project/ with all 12 dishes showing Twemoji illustrations.
 
-```
-+--------------------------------------------------------------+
-|  [Insert screenshot of the live page here — the user clicks  |
-|   "Generate Lunch!" repeatedly and each dish (emoji + name)  |
-|   appears in the dish area. Confirm 12/12 dishes visible.]   |
-+--------------------------------------------------------------+
-```
+![Live app screenshot](st.PNG)
 
 **What worked.**
-- Emoji are dependency-free, cross-platform, and always render as color images — no icon library, no license tier.
-- The three-file refactor (`index.html` / `style.css` / `script.js`) made the fix a one-line-region change instead of an edit inside a large inline `<style>`/`<script>` block.
-- GitHub Pages deployment was ~1 command; the repo connects cleanly and rebuilds automatically on push.
+- Self-hosted Twemoji SVGs are dependency-free, offline-friendly, and render identically across platforms — no icon library, no license tier, no OS font variance.
+- The three-file refactor (`index.html` / `style.css` / `script.js`) made each fix a one-line-region change instead of an edit inside a large inline `<style>`/`<script>` block.
+- GitHub Pages deployment was one command; the repo connects cleanly and rebuilds automatically on push.
 
 **What surprised me.**
-- The failure was *silent*: no 404, no console error, just empty space. I expected an error; the "free" Fast-search on the Font Awesome site obscures which classes ship in the free build.
+- The failure was *silent*: no 404, no console error, just empty space. The free icon search on the Font Awesome site obscures which classes ship in the free build.
 - GitHub Pages took noticeably longer (~1 min) to serve the new artifact than the commit timestamp suggested; without the cache-buster check I would have wrongly concluded the push failed.
-- Emoji render in full color even though the CSS applies `color: #ff6b6b` to the icon container — glyph color is OS-controlled, which neutralizes one whole class of styling bugs.
+- Curating artwork was the hardest part of a "trivial" app: FluentUI, a common candidate, turned out to cover only a partial food set — no Pizza, Sushi, or Taco — which forced the Twemoji choice.
 
 **Next improvement.** Add a repetition guard: track the last served dish and exclude it from the next draw, and persist the daily pick in `localStorage` so a user who reopens the page keeps the choice until a new day. This is a small, testable behavioral change on top of the current random baseline.
 
@@ -157,19 +158,21 @@ Figure 2: Proof of work. Live app deployed at https://pollyiva.github.io/Lunch-M
 
 **How AI was used.**
 - *Code generation:* initial single-file `index.html` app; later split into three files.
-- *Debugging:* identified the missing-icon root cause by scanning the free FA stylesheet for the three icon classes.
+- *Debugging:* identified the missing-icon root cause by scanning the free FA stylesheet for the three icon classes; also found the FluentUI food-set gap.
 - *Docs:* authored `README.md`.
 - *Deployment:* connected the local repo to `PollyIva/Lunch-Menu-Generator-project`, resolved a push conflict, enabled Pages, verified live URL.
 
 **What I personally verified.**
 - Re-ran the regex scan of the cdnjs CSS myself — confirmed exactly `fa-pasta`, `fa-bowl-hot`, `fa-bowl` absent (9/12).
-- Inspected raw UTF-8 bytes of deployed `script.js` (`F0 9F 8D 95` = U+1F355) — the emoji survived to production.
+- Inspected raw UTF-8 bytes of deployed `script.js` (`F0 9F 8D 95` = U+1F355) in the intermediate emoji state.
 - Fetched the live Pages URL with a timestamp query and confirmed updated content.
+- Confirmed the deployed `assets/food/pizza.svg` returns HTTP 200 and valid SVG markup.
 - Manually clicked through all 12 dishes in a browser and confirmed 12/12 pictures.
 
 **What I trusted without verification.**
-- Visual appearance of emoji on other operating systems/browsers (checked only on my own browser); emoji style differs across platforms.
+- Visual appeal of the Twemoji artwork on other operating systems/browsers (checked only on my own browser).
 - That Font Awesome's remaining UI chrome (spinner, utensils, dice icon) is free-tier — verified afterwards by the same stylesheet scan described in §4.
+- Twemoji's CC-BY 4.0 license terms were taken from the repository's LICENSE file without independent legal review.
 
 **Session log reference.** The attached `session.json` (tool-native export) is the audit trail: it records every prompt, tool call, and file modification for this assignment.
 
@@ -184,3 +187,5 @@ Figure 2: Proof of work. Live app deployed at https://pollyiva.github.io/Lunch-M
 [3] GitHub Docs, "About GitHub Pages," GitHub, Inc. [Online]. Available: https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages. [Accessed: 2026-09-14].
 
 [4] B. Schwartz, *The Paradox of Choice: Why More Is Less*. New York, NY, USA: HarperCollins, 2004.
+
+[5] Twitter/X, "Twemoji — Twitter Emoji (SVG), CC-BY 4.0," GitHub Repository. [Online]. Available: https://github.com/jdecked/twemoji. [Accessed: 2026-09-14].
