@@ -4,20 +4,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const foodName = document.querySelector('.food-name');
     const lunchDisplay = document.querySelector('.lunch-display');
     
-    // Array of lunch options paired with a Twemoji SVG image (assets/food/)
+    // Array of lunch options: Font Awesome icons (free set) or a downloaded SVG image
     const lunchMenu = [
-        { name: "Pizza", img: "pizza.svg" },
-        { name: "Sushi", img: "sushi.svg" },
-        { name: "Burger", img: "burger.svg" },
-        { name: "Salad", img: "salad.svg" },
-        { name: "Tacos", img: "tacos.svg" },
-        { name: "Ramen", img: "ramen.svg" },
-        { name: "Sandwich", img: "sandwich.svg" },
-        { name: "Pasta", img: "pasta.svg" },
-        { name: "Curry", img: "curry.svg" },
-        { name: "Steak", img: "steak.svg" },
-        { name: "Soup", img: "soup.svg" },
-        { name: "BBQ", img: "bbq.svg" }
+        { name: "Pizza", faClass: "fa-pizza-slice" },
+        { name: "Sushi", faClass: "fa-fish" },
+        { name: "Burger", faClass: "fa-hamburger" },
+        { name: "Salad", faClass: "fa-leaf" },
+        { name: "Tacos", img: "icons/taco.svg" },
+        { name: "Ramen", img: "icons/ramen.svg" },
+        { name: "Sandwich", faClass: "fa-bread-slice" },
+        { name: "Pasta", img: "icons/pasta.svg" },
+        { name: "Curry", faClass: "fa-mortar-pestle" },
+        { name: "Steak", faClass: "fa-drumstick-bite" },
+        { name: "Soup", img: "icons/soup.svg" },
+        { name: "BBQ", faClass: "fa-fire" }
     ];
     
     // Function to generate random lunch
@@ -35,7 +35,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // After a short delay, show the selected lunch
         setTimeout(() => {
-            foodIcon.innerHTML = `<img src="assets/food/${selectedLunch.img}" alt="${selectedLunch.name}">`;
+            if (selectedLunch.faClass) {
+                foodIcon.innerHTML = `<i class="fas ${selectedLunch.faClass}"></i>`;
+            } else {
+                foodIcon.innerHTML = `<img src="${selectedLunch.img}" alt="${selectedLunch.name}">`;
+            }
             foodName.textContent = selectedLunch.name;
             
             // Add animation class

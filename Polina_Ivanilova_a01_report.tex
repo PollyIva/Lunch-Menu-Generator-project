@@ -55,20 +55,19 @@
 % Abstract
 % =============================================================================
 \begin{abstract}
-  \noindent Choosing a lunch option under time pressure imposes a small but recurring
-  decision cost on daily users. This report presents a zero-dependency web app that
-  randomizes a lunch pick from a fixed menu list, implemented as vanilla
-  HTML/CSS/JavaScript and deployed to GitHub Pages. Functional verification showed that
-  3 of 12 attempted Font Awesome icons do not exist in the free 6.4.0 icon set, rendering
-  those dishes blank; a switch to native emoji restored 12/12 pictures, and a final
-  upgrade to self-hosted Twemoji SVG artwork
+  \noindent People daily spend a lot of time solving the basic problem of deciding what to
+  eat for lunch. This report presents a zero-dependency web app that randomizes a lunch pick
+  from a fixed menu list, implemented as vanilla HTML/CSS/JavaScript and deployed to GitHub
+  Pages. Functional verification showed that 3 of 12 attempted Font Awesome icons do not
+  exist in the free 6.4.0 icon set, rendering those dishes blank; a switch to native emoji
+  restored 12/12 pictures, and a final upgrade to self-hosted Twemoji SVG artwork
   (\texttt{assets/food/}, CC-BY~4.0) provides consistent, offline illustrations for every
-  dish. The key takeaway is that free icon libraries silently omit PRO-only glyphs, so
-  verifying glyph availability against the shipped stylesheet is mandatory before relying
-  on icon markup.
+  dish. The main conclusion is that free icon libraries don't have the glyphs (icons) that
+  are available in the pro version. Therefore, before using a glyph, you need to check the
+  availability of the icons in the style you want.
 \end{abstract}
 
-\keywords{menu generator, random selection, GitHub Pages, Font Awesome, Twemoji, SVG, verification}
+\keywords{menu generator, random selection, GitHub Pages, Font Awesome, Twemoji, SVG}
 
 \vspace{10pt}
 
@@ -77,27 +76,21 @@
 % =============================================================================
 \section{Introduction}
 
-\textbf{Problem statement.} Users routinely face ``what to eat for lunch?'' decisions that
-consume disproportionate cognitive effort for a low-stakes outcome, a classic instance of
-decision fatigue described in~\cite{schwartz2004paradox}. A scaffold for a recommender
-should remove that friction with minimal user interaction --- one click, one answer.
+\textbf{Problem statement.} Users routinely face "what to eat for lunch?" decisions that take too much effort for a low-stakes outcome, a
+classic instance of decision fatigue described in~\cite{schwartz2004paradox}. Our recommendation service should remove that problem with minimal user interaction --- one
+click, one answer.
 
-\textbf{Motivation.} This is the first assignment of an AI-assisted Recommender Systems
-course, whose goal is a working baseline that later weeks will extend (content-based
-filtering, collaborative filtering, two-tower retrieval). A visual, deployable web front
-end gives a concrete target UI that later recommendation logic can plug into.
+\textbf{Motivation.} This is the first assignment of an AI-assisted Recommender Systems course, whose goal is a working baseline that later weeks will extend
+(content-based filtering, collaborative filtering, two-tower retrieval). A visual, deployable web front end gives a concrete target UI that later recommendation logic can plug into.
 
-\textbf{Concrete example.} The user opens \texttt{index.html} (or the live page), sees 12
-possible dishes, and clicks \textbf{``Generate Lunch!''}; the app shows ``Thinking\ldots''
-for 500~ms and then displays a random dish with a picture, e.g.\ \textbf{Ramen}.
+\textbf{Concrete example.} The user opens the live page (https://pollyiva.github.io/Lunch-Menu-Generator-project/), sees 12 possible dishes, and can click \textbf{``Generate Lunch!''} to get a new dish. The app shows ``Thinking\ldots'' for 500 ms and then displays a random dish with a picture, e.g.\ \textbf{Ramen}.
 
 \textbf{Contributions.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
   \item A fully self-contained random lunch chooser (one HTML file originally, later
         refactored into \texttt{index.html} / \texttt{style.css} / \texttt{script.js}).
   \item Public GitHub Pages deployment with an automated Pages build.
-  \item A documented icon-rendering failure (PRO-only Font Awesome classes) and its fix,
-        verified by byte-level inspection of the deployed artifact.
+          
 \end{itemize}
 
 % =============================================================================
@@ -120,17 +113,10 @@ for 500~ms and then displays a random dish with a picture, e.g.\ \textbf{Ramen}.
 
 \textbf{Alternatives considered.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
-  \item \emph{Server-side backend API} returning the random pick --- rejected: a static
-        page needs no backend, and an API adds latency and hosting cost for zero benefit
-        at scaffold scope.
-  \item \emph{Random image APIs (e.g., Unsplash food photos)} --- rejected: external
-        dependency, network latency, and non-deterministic results; an icon/illustration is
-        deterministic and offline-friendly.
-  \item \emph{Microsoft FluentUI Emoji} --- evaluated for richer 3D artwork but rejected:
-        the asset set only covers a partial food list (no Pizza, Sushi, Taco, Sandwich,
-        Spaghetti, or Ramen), so it cannot cover a 12-item menu.
-  \item \emph{Pure Font Awesome icons} --- initially chosen, then failed for 3 items
-        (see Sec.~5); replaced first by emoji, then by self-hosted Twemoji SVGs.
+  \item \emph{Server-side backend API} --- rejected because it is unnecessary for a static page and would add extra latency and hosting costs.
+  \item \emph{Font Awesome} --- initially used, but some required icons were only available in the Pro version, causing several icons to be missing.
+  \item \emph{Emoji} --- used as a temporary replacement, but rejected because they did not look professional enough.
+  \item \emph{Self-hosted Twemoji SVGs} --- chosen as the final solution. The icons are stored directly in the project, require no CDN, and provide a consistent visual style for all 12 dishes.
 \end{itemize}
 
 % =============================================================================
@@ -252,8 +238,7 @@ self-hosted Twemoji SVGs kept 12/12 dishes visible, now with consistent flat-vec
 
 \textbf{Comparison vs.\ baseline.} The Font Awesome baseline failed for 3/12 dishes (25\%),
 with no console error --- the blanks were silent. The emoji version reduced failures to
-0/12. Neither approach changed the selection logic, so the comparison isolates the
-presentation layer.
+0/12. Neither approach changed the selection logic, so we compare options based on visuals only.
 
 \textbf{Verification.} Four independent, repeatable checks:
 \begin{enumerate}[leftmargin=2em,itemsep=1pt]
@@ -320,7 +305,7 @@ each dish's \texttt{<img>} loads.
 \textbf{What surprised me.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
   \item The failure was \emph{silent}: no 404, no console error, just empty space. The free
-        icon search on the Font Awesome site obscures which classes ship in the free build.
+        icon search on the Font Awesome site does not show which icons are included with the free build.
   \item GitHub Pages took noticeably longer (~1~min) to serve the new artifact than the
         commit timestamp suggested; without the cache-buster check I would have wrongly
         concluded the push failed.
@@ -329,10 +314,7 @@ each dish's \texttt{<img>} loads.
         --- which forced the Twemoji choice.
 \end{itemize}
 
-\textbf{Next improvement.} Add a repetition guard: track the last served dish and exclude
-it from the next draw, and persist the daily pick in \texttt{localStorage} so a user who
-reopens the page keeps the choice until a new day. This is a small, testable behavioral
-change on top of the current random baseline.
+\textbf{Next improvement.} Stopping repetition: track the last served dish and exclude it from the next draw, and persist the daily pick in \texttt{localStorage} so a user who reopens the page keeps the choice until a new day. This is a small, testable change on top of the current random baseline.
 
 % =============================================================================
 % 6. AI Usage Disclosure
@@ -344,7 +326,7 @@ refactoring, deployment, and report drafting; branch deployment via \texttt{gh} 
 
 \textbf{How AI was used.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
-  \item \emph{Code generation:} initial single-file \texttt{index.html} app; later split
+  \item \emph{Code generation:} initial single-file \texttt{index.html} app, later split
         into three files.
   \item \emph{Debugging:} identified the missing-icon root cause by scanning the free FA
         stylesheet for the three icon classes; also found the FluentUI food-set gap.
@@ -355,14 +337,10 @@ refactoring, deployment, and report drafting; branch deployment via \texttt{gh} 
 
 \textbf{What I personally verified.}
 \begin{itemize}[leftmargin=2em,itemsep=1pt]
-  \item Re-ran the regex scan of the cdnjs CSS myself --- confirmed exactly
-        \texttt{fa-pasta}, \texttt{fa-bowl-hot}, \texttt{fa-bowl} absent (9/12).
-  \item Inspected raw UTF-8 bytes of deployed \texttt{script.js}
-        (\texttt{F0 9F 8D 95} = U+1F355) in the intermediate emoji state.
-  \item Fetched the live Pages URL with a timestamp query and confirmed updated content.
-  \item Confirmed the deployed \texttt{assets/food/pizza.svg} returns HTTP 200 and valid
-        SVG markup.
-  \item Manually clicked through all 12 dishes in a browser and confirmed 12/12 pictures.
+  \item Manually tested the application in a browser and confirmed that random dish generation works correctly.
+  \item Checked that the dish images are displayed correctly after switching to self-hosted Twemoji SVGs.
+  \item Checked the published version of the project on GitHub Pages.
+  \item Partially rewrote the report.
 \end{itemize}
 
 \textbf{What I trusted without verification.}
@@ -387,7 +365,7 @@ assignment.
 
 \bibitem{fontawesome}
 Font Awesome, ``Font Awesome Free Search,'' Fonticons, Inc.
-\url{https://fontawesome.com/search?o=r\&m=free} (accessed 2026-09-14).
+\url{https://fontawesome.com/search?ic=free-collection} (accessed 2026-09-14).
 
 \bibitem{mdnrandom}
 MDN Web Docs, ``Math.random() --- JavaScript,'' Mozilla Developer Network, 2025.
