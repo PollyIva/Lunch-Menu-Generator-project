@@ -1,7 +1,7 @@
 # Random Lunch Menu Generator: A Zero-Dependency Web App Scaffold
 
 **Student:** Polina Ivanilova | **Team:** Individual
-**Email:** pvivanilova@edu.hse.ru | **Date:** 2026-09-14
+**Email:** pvivanilova@edu.hse.ru | **Date:** 2026-09-17
 **Assignment:** A01 — Random Lunch Generator web app scaffold (Week 1)
 
 ---
@@ -30,13 +30,22 @@ People daily spend a lot of time solving basic problem of deciding what to eat f
 
 ## 2. Related Work
 
-**Prior work consulted.**
-[1] Font Awesome, "Font Awesome Free Search," Fonticons, Inc. [Online]. Available: https://fontawesome.com/search?o=r&m=free. [Accessed: 2026-09-14].
-[2] MDN Web Docs, "Math.random() — JavaScript," Mozilla Developer Network, 2025. [Online]. Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random. [Accessed: 2026-09-14].
-[3] GitHub Docs, "About GitHub Pages," GitHub, Inc. [Online]. Available: https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages. [Accessed: 2026-09-14].
-[4] B. Schwartz, *The Paradox of Choice: Why More Is Less*. New York, NY, USA: HarperCollins, 2004.
-[5] Twitter/X, "Twemoji — Twitter Emoji (SVG), CC-BY 4.0," GitHub Repository. [Online]. Available: https://github.com/jdecked/twemoji. [Accessed: 2026-09-14].
-[6] SVG Repo, download source for the Pasta, Ramen, Soup, and Tacos SVG dish icons kept in `icons/`.
+[1] Font Awesome, ["Font Awesome Free Search,"](https://fontawesome.com/search?ic=free-collection) Fonticons, Inc. 
+[Online] Available: https://fontawesome.com/search?o=r&m=free. (accessed 2026-09-17).
+
+[2] MDN Web Docs, ["Math.random() — JavaScript,"](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) Mozilla Developer Network, 2025. [Online] Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random (accessed 2026-09-17).
+
+[3] GitHub Docs, ["About GitHub Pages,"](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages)  GitHub, Inc. 
+[Online] Available: https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages. (accessed 2026-09-17).
+
+[4] B. Schwartz, [*The Paradox of Choice: Why More Is Less*](https://en.wikipedia.org/wiki/The_Paradox_of_Choice). New York, NY, USA: HarperCollins, 
+[Online] Available: https://en.wikipedia.org/wiki/The_Paradox_of_Choice. (accessed 2026-09-17).
+
+[5] Twitter/X, ["Twemoji — Twitter Emoji (SVG), CC-BY 4.0,"](https://github.com/jdecked/twemoji) GitHub Repository.  
+[Online] Available: https://github.com/jdecked/twemoji. (accessed 2026-09-17).
+
+[6] SVG Repo, ["Free SVG Vectors,"](https://www.svgrepo.com) download source for the Pasta, Ramen, Soup, and Tacos SVG dish icons kept in `icons/`.  
+[Online] Available: https://www.svgrepo.com (accessed 2026-09-17).
 
 **Alternatives considered.**
 - *Server-side backend API* — rejected because it is unnecessary for a static page and would add extra latency and hosting costs.
@@ -150,7 +159,7 @@ Figure 1: Icon availability in the free Font Awesome 6.4.0 stylesheet.
 **Failure case.** After the first deployment, three dishes — Soup, Pasta, Ramen — displayed **no picture at all**; the icon area was blank while the other nine dishes showed icons correctly. No JavaScript error appeared in the browser console.
 
 **Root cause.** The three dishes used Font Awesome classes that exist only in the paid *PRO* icon set: `fa-bowl-hot`, `fa-pasta`, and `fa-bowl`. The free 6.4.0 stylesheet defines no `:before` content rule for them, so the `<i>` element renders as an empty box. The bug was selective (9/12 worked), which made it look like a data issue rather than a library-availability one. In fact, the icon names were picked from search results without first checking that they ship in the *free* CDN build.
-![Live app screenshot](st.PNG)
+
 **Fix + verification.** The fix had several stages. (1) *Restore:* replaced all twelve food icons with native Unicode emoji rendered via `textContent` instead of `<i>` markup — detection → change → confirmation: regex-scanned the free CSS and confirmed the three classes absent; switched the array to emoji; re-fetched the deployed `script.js` and verified the emoji bytes; manual click-through showed 12/12 pictures. (2) *Polish (intermediate):* upgraded the artwork to self-hosted Twemoji SVGs in `assets/food/`, which render identically across operating systems. (3) *Final:* returned to the original Font Awesome look — the 8 dishes present in the free set keep their icon classes, and the 4 missing dishes use lightweight SVG icons downloaded from the SVG Repo [6] into `icons/`; confirmed the deployed `icons/ramen.svg` returns HTTP 200 and manual click-through shows 12/12 pictures.
 
 **3d icon variant (final).** A 3D-style icon variant was also prepared as an alternative artwork option for the missing dishes. Figure 3 shows examples of that 3D variant. It was ultimately **not taken**: the final result should look like the finished app — a single consistent flat vector style that matches the rest of the Font Awesome interface, whereas the 3D icons look like separate enlarged renders rather than uniform UI icons.
@@ -203,14 +212,14 @@ refactoring, deployment, and report drafting; branch deployment via `gh` CLI.
 
 ## References
 
-[1] Font Awesome, "Font Awesome Free Search," Fonticons, Inc. https://fontawesome.com/search?ic=free-collection (accessed 2026-09-14).
+[1] Font Awesome, ["Font Awesome Free Search,"](https://fontawesome.com/search?ic=free-collection) Fonticons, Inc. [Online] (accessed 2026-09-17).
 
-[2] MDN Web Docs, "Math.random() — JavaScript," Mozilla Developer Network, 2025. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random (accessed 2026-09-14).
+[2] MDN Web Docs, ["Math.random() — JavaScript,"](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) Mozilla Developer Network, 2025. [Online] (accessed 2026-09-14).
 
-[3] GitHub Docs, "About GitHub Pages," GitHub, Inc. https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages (accessed 2026-09-14).
+[3] GitHub Docs, ["About GitHub Pages,"](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages)  GitHub, Inc. [Online] (accessed 2026-09-17).
 
-[4] B. Schwartz, *The Paradox of Choice: Why More Is Less*. New York, NY, USA: HarperCollins, 2004.
+[4] B. Schwartz, [*The Paradox of Choice: Why More Is Less*](https://en.wikipedia.org/wiki/The_Paradox_of_Choice). New York, NY, USA: HarperCollins, 2004 [Online] (accessed 2026-09-17)
 
-[5] Twitter/X, "Twemoji — Twitter Emoji (SVG), CC-BY 4.0," GitHub Repository. https://github.com/jdecked/twemoji (accessed 2026-09-14).
+[5] Twitter/X, ["Twemoji — Twitter Emoji (SVG), CC-BY 4.0,"](https://github.com/jdecked/twemoji) GitHub Repository. [Online] (accessed 2026-09-17).
 
-[6] SVG Repo, "Free SVG Vectors," SVG Repo. https://www.svgrepo.com (accessed 2026-09-14).
+[6] SVG Repo, ["Free SVG Vectors,"](https://www.svgrepo.com) SVG Repo. [Online] (accessed 2026-09-17).
