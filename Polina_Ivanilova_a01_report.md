@@ -103,11 +103,11 @@ lastRecommendedAt[randomIndex] = now;
 
 
 **Configuration.**
-- Repository: `PollyIva/Lunch-Menu-Generator-project` (public).
+- Repository: [`PollyIva/Lunch-Menu-Generator-project`](https://github.com/PollyIva/Lunch-Menu-Generator-project) https://github.com/PollyIva/Lunch-Menu-Generator-project (public).
 - Pages: source branch `main`, path `/`; live at
-  https://pollyiva.github.io/Lunch-Menu-Generator-project/.
+  https://pollyiva.github.io/Lunch-Menu-Generator-project/ .
 - Font Awesome loaded from
-  https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css.
+  https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css .
 
 
 ## 4. Experiments
